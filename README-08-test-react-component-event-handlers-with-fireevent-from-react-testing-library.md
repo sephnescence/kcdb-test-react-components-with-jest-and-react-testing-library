@@ -12,7 +12,7 @@
    import {FavoriteNumber} from '../favorite-number'
 
    test('entering an invalid value shows an error message', () => {
-     render(<FavoriteNumber />)
+     const {rerender} = render(<FavoriteNumber />)
      const input = screen.getByLabelText(/favorite number/i)
      fireEvent.change(input, {target: {value: '2'}}) // Emulate event.target.value
      expect(input).toHaveValue(2)
@@ -30,6 +30,10 @@
      expect(screen.getByRole('alert')).toHaveTextContent(
        /the number is invalid/i,
      )
+
+     // I think this is technically how you're meant to change things without typing
+     // There is no forward ref though, so I cannot set the value directly
+     rerender(<FavoriteNumber max={10} />) // This means that the alert role should no longer show
    })
    ```
 
@@ -49,3 +53,7 @@ for the first video
 Refer to
 https://testingjavascript.com/lessons/react-improve-test-confidence-with-the-user-event-module
 for the second video
+
+Refer to
+https://testingjavascript.com/lessons/react-test-prop-updates-with-react-testing-library
+for the third video
