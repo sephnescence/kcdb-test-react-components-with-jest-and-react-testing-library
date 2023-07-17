@@ -16,6 +16,7 @@
      const input = screen.getByLabelText(/favorite number/i)
      fireEvent.change(input, {target: {value: '2'}}) // Emulate event.target.value
      expect(input).toHaveValue(2)
+     expect(screen.queryByRole('alert')).toBe(null)
      fireEvent.change(input, {target: {value: '0'}}) // The value should now be 10
      expect(input).toHaveValue(0) // It gets reset to 0 on validation error
      expect(screen.getByRole('alert')).toHaveTextContent(
@@ -34,17 +35,39 @@
      // I think this is technically how you're meant to change things without typing
      // There is no forward ref though, so I cannot set the value directly
      rerender(<FavoriteNumber max={10} />) // This means that the alert role should no longer show
+     expect(screen.queryByRole('alert')).toBe(null)
    })
    ```
 
-1. For now, we don't know things like whether we can type a 1 and assert that
-   the role doesn't exist, because an exception is thrown because the role was
-   not able to be found (because the input value was legit). I was planning on
-   doing this, and then entering a zero to test that the alert role now shows
+1. By the fourth video, we were told how to assert that the error role doesn't
+   exist. Note that `queryByX` will not fail as nicely as `getByX`. For example
+
+   ```
+   expect(received).toHaveTextContent()
+
+   received value must be an HTMLElement or an SVGElement.
+   Received has value: null
+   ```
+
+   Versus
+
+   ```
+   TestingLibraryElementError: Unable to find an accessible element with the role "alet"
+
+   Here are the accessible roles:
+   <a call to debug on your behalf>
+   ```
+
+   At least with experience, seeing that first message will prompt you to look
+   for a `queryByX` call
+
 1. Note that from playing around, it appears that there are advantages to
    calling fireEvent.change as opposed to userEvent.type, as `debug` will
    actually show the value that fireEvent.change put in, whereas, typing will
    not behave the same way
+1. Note that props can be updated by calling `rerender` if you grabbed it from
+   the output of `render`, but without a forward ref, the only way to set the
+   value of the input is to type into it.
 
 Refer to
 https://testingjavascript.com/lessons/react-test-react-component-event-handlers-with-fireevent-from-react-testing-library-37dda2ae
@@ -57,3 +80,7 @@ for the second video
 Refer to
 https://testingjavascript.com/lessons/react-test-prop-updates-with-react-testing-library
 for the third video
+
+Refer to
+https://testingjavascript.com/lessons/react-assert-that-something-is-not-rendered-with-react-testing-library
+for the fourth video
