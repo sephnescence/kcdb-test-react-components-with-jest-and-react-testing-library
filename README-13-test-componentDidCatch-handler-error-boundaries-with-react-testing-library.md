@@ -55,6 +55,21 @@
    time without the `shouldThrow` prop set to true. When rerendering it _with_
    the prop set to true, we will expect the Error Boundary to have been called
 
+1. We get console logs and component stack traces in our terminal still. We can
+   refer to `src/__tests__/error-boundary-01.js` to see how Kent alleviates this
+
+```js
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  console.error.mockRestore()
+})
+```
+
+Then you can also call `expect(console.error).toHaveBeenCalledTimes(2)`
+
 Refer to
 https://testingjavascript.com/lessons/react-test-componentdidcatch-handler-error-boundaries-with-react-testing-library
 for the video
