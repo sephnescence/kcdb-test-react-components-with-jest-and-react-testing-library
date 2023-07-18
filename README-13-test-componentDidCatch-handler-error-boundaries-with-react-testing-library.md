@@ -68,6 +68,59 @@ afterEach(() => {
 })
 ```
 
+1. As it turns out, if we were to call `rerender` on the Error Boundary with the
+   Bomb's throw prop set to false, the Error Boundary still thinks it's in an
+   error state. That could probably be solved by exposing a forward ref, but
+   Kent didn't go over that, and it makes enough sense to not make something
+   like that just so your test can access the state. Instead, Kent heavily
+   subscribes to having your tests do what you'd expect a user to do. In this
+   case, the Error Boundary has a `try again?` button, so we should just click
+   that. If you refer to `src/error-boundary.js`, you can see that clicking this
+   button will clear the error state. We've done this before with `userEvent`
+   from `@testing-library/user-event`
+
+```js
+userEvent.click(screen.getByText(/try again/i))
+```
+
+1. Further to that, we can test that the Error Boundary showed up before and has
+   disappeared now. Referring to `src/__tests__/error-boundary-03.js`
+
+```js
+rerender(
+  <ErrorBoundary>
+    <Bomb shouldThrow={true} />
+  </ErrorBoundary>,
+)
+
+const error = expect.any(Error)
+const info = {componentStack: expect.stringContaining('Bomb')}
+expect(mockReportError).toHaveBeenCalledWith(error, info)
+expect(mockReportError).toHaveBeenCalledTimes(1)
+
+expect(console.error).toHaveBeenCalledTimes(2)
+
+expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+  `"There was a problem."`,
+)
+
+console.error.mockClear()
+mockReportError.mockClear()
+
+rerender(
+  <ErrorBoundary>
+    <Bomb />
+  </ErrorBoundary>,
+)
+
+userEvent.click(screen.getByText(/try again/i))
+
+expect(mockReportError).not.toHaveBeenCalled()
+expect(console.error).not.toHaveBeenCalled()
+expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+expect(screen.queryByText(/try again/i)).not.toBeInTheDocument()
+```
+
 Then you can also call `expect(console.error).toHaveBeenCalledTimes(2)`
 
 Refer to
