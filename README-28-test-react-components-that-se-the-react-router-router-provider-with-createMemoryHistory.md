@@ -1,3 +1,13 @@
+1. Note that apparently at some point, Kent updated the course to point to
+   `https://github.com/kentcdodds/react-testing-library-course/blob/tjs/src/__tests__/react-router-03.js`
+   instead, which DOES have `createMemoryHistoryUsage`. For example...
+
+```js
+const memoryHistory = createMemoryHistory({initialEntries: ['/']}),
+```
+
+Historical entries from here on...
+
 1. Next up, Kent wants us to to use createMemoryHistory to test the Main
    component to ensure that it shows the correct page based on what page the
    user is on. So referring to `src/main.js` and
@@ -36,3 +46,7 @@ for the first video
 Refer to
 https://testingjavascript.com/lessons/react-initialize-the-history-object-with-a-bad-entry-to-test-the-react-router-no-match-route
 for the second video
+
+Refer to
+https://testingjavascript.com/lessons/react-create-a-custom-render-function-to-simplify-tests-of-react-router-components-2572008e
+for the third video
